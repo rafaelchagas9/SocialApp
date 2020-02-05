@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text} from 'react-native';
-import firebase from 'firebase'
+import { View, StyleSheet, Text, Button} from 'react-native';
+import UserPermissions from '../utilities/UserPermissions'
 
 
 class HomeScreen extends Component {  
+
+  handleClick(){
+    UserPermissions.getCameraPermission()
+  }
 
   render() {
     return(
         <View style={styles.container}>
         <Text style={{color:'#fff'}}>Salve</Text>
+        <Button title='Clique' onPress={this.handleClick}></Button>
         </View>
     );
   }

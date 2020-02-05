@@ -23,6 +23,11 @@ class RegisterScreen extends Component {
         }
     }
 
+    capitalize(string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     createUser = () => {
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
         .catch((error) =>{
@@ -60,7 +65,7 @@ class RegisterScreen extends Component {
             </View>
             <View style={styles.form}>
                 <Text style={styles.inputTitle}>Nome</Text>
-                <TextInput onChangeText={name => this.setState({name})} style={styles.input}/>
+                <TextInput onChangeText={name => this.setState({name: this.capitalize(name)})} style={styles.input}/>
             </View>
             <View style={styles.form}>
                 <Text style={styles.inputTitle}>Email</Text>

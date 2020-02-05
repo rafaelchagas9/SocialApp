@@ -15,68 +15,88 @@ import NotificationScreen from './screens/NotificationScreen'
 import ProfileScreen from './screens/ProfileScreen'
 
 
-import firebase from 'firebase'
-import { firebaseConfig } from './config';
-firebase.initializeApp(firebaseConfig)
 
-const AppNavigator = createBottomTabNavigator({
-  Home: {
-    screen: HomeScreen,
-    title: 'Início',
-    navigationOptions:{
-      tabBarIcon: ({tintColor}) => <Ionicons name='ios-home' size={24} color={tintColor}/>
-    }
-  },
-  Message: {
-    screen: MessageScreen,
-    navigationOptions:{
-      title: 'Mensagens',
-      tabBarIcon: ({tintColor}) => <Ionicons name='ios-chatboxes' size={24} color={tintColor}/>
-    }
-  },
-  Post: {
-    screen: PostScreen,
-    navigationOptions:{
-      title: 'Postar',
-      tabBarIcon: ({tintColor}) => 
-      <Ionicons 
-        name='ios-add-circle'
-        size={48}
-        color="#26C6DA"
-          style={{
-          shadowColor: '#26C6DA',
-          shadowOffset: {width:0, height:0},
-          shadowRadius:10,
-          shadowOpacity: 0.3
-        }}/>
-    }
-  },
-  Notification: {
-    screen: NotificationScreen,
-    navigationOptions:{
-      title: 'Notificações',
-      tabBarIcon: ({tintColor}) => <Ionicons name='ios-notifications' size={24} color={tintColor}/>
-    }
-  },
-  Profile: {
-    screen: ProfileScreen,
-    navigationOptions:{
-      title: 'Perfil',
-      tabBarIcon: ({tintColor}) => <Ionicons name='ios-person' size={24} color={tintColor}/>
-    }
-  }
-},
-{
-  tabBarOptions:{
-    style:{
-      backgroundColor: '#141414'
+
+const AppContainer = createStackNavigator(
+  {
+  default: createBottomTabNavigator({
+    Home: {
+      screen: HomeScreen,
+      title: 'Início',
+      navigationOptions:{
+        tabBarIcon: ({tintColor}) => <Ionicons name='ios-home' size={24} color={tintColor}/>
+      }
     },
-    activeTintColor:'#fff',
-    inactiveTintColor: '#6e7075',
-    showLabel: false
+    Message: {
+      screen: MessageScreen,
+      navigationOptions:{
+        title: 'Mensagens',
+        tabBarIcon: ({tintColor}) => <Ionicons name='ios-chatboxes' size={24} color={tintColor}/>
+      }
+    },
+    Post: {
+      screen: PostScreen,
+      navigationOptions:{
+        title: 'Postar',
+        tabBarIcon: ({tintColor}) => 
+        <Ionicons 
+          name='ios-add-circle'
+          size={48}
+          color="#26C6DA"
+            style={{
+            shadowColor: '#26C6DA',
+            shadowOffset: {width:0, height:0},
+            shadowRadius:10,
+            shadowOpacity: 0.3
+          }}/>
+      }
+    },
+    Notification: {
+      screen: NotificationScreen,
+      navigationOptions:{
+        title: 'Notificações',
+        tabBarIcon: ({tintColor}) => <Ionicons name='ios-notifications' size={24} color={tintColor}/>
+      }
+    },
+    Profile: {
+      screen: ProfileScreen,
+      navigationOptions:{
+        title: 'Perfil',
+        tabBarIcon: ({tintColor}) => <Ionicons name='ios-person' size={24} color={tintColor}/>
+      }
+    }
+  },
+  {
+    defaultNavigationOptions:{
+      tabBarOnPress: ({navigation, defaultHandler}) => {
+        if(navigation.state.key === "Post"){
+          navigation.navigate("postModal")
+        }else{
+          defaultHandler()
+        }
+      }
+    },
+    tabBarOptions:{
+      style:{
+        backgroundColor: '#141414'
+      },
+      activeTintColor:'#fff',
+      inactiveTintColor: '#6e7075',
+      showLabel: false
+    }
   }
-}
+  ),
+    postModal: 
+    {
+      screen: PostScreen
+    }
+  },
+  {
+    mode: "modal",
+    headerMode: "none"
+  }
 )
+
 
 const AuthStack = createStackNavigator({
   Login: {
@@ -102,7 +122,7 @@ export default createAppContainer(
   createSwitchNavigator(
     {
       Loading: LoadingScreen,
-      App: AppNavigator,
+      App: AppContainer,
       Auth: AuthStack
     },
     {
