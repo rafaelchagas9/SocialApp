@@ -1,7 +1,10 @@
 import firebase, { firestore } from 'firebase'
 import { firebaseConfig } from './config';
 
+
 class Fire{
+    
+
     constructor(){
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -29,7 +32,7 @@ class Fire{
       }
 
     addPost = async(text, localUri) => {
-        const remoteUri = await this.uploadPhotoAsync(localUri)
+        const remoteUri = await this.uploadPostPhoto(localUri)
         var uid = firebase.auth().currentUser.uid
         return new Promise((res, rej)=>{
             firebase.database().ref('posts/'+uid+'/'+this.timestamp).set({
@@ -47,8 +50,73 @@ class Fire{
         })
     }
 
-    uploadPhotoAsync = async(uri) => {
-        console.log('começando upload')
+    registerUserOnDatabase = (name) => {
+        var user = firebase.auth().currentUser
+        var uid = user.uid
+        var profilePicture = user.photoURL
+        alert(profilePicture)
+
+        return new Promise((res, rej)=>{
+            firebase.database().ref('users/'+uid).set({
+                uid: uid,
+                registerTime: this.timestamp,
+                name,
+                profilePicture
+              })
+              .then(ref => {
+                res(ref)
+            })
+            .catch(error => {
+                rej(error)
+            })
+        })
+
+    }
+
+    uploadProfilePhoto = async(uri) => {
+        if(uri == null){
+            var user = firebase.auth().currentUser;
+                user.updateProfile({
+                    photoURL: 'https://firebasestorage.googleapis.com/v0/b/teste-b93c3.appspot.com/o/default%2Fuser.png?alt=media&token=7002a6de-fa02-410f-b934-9a022eb35c87'
+                }).then(function() {
+                        // Update successful.
+                }).catch(function(error) {
+                    alert('Falha ao criar sua conta '+error)
+                });
+                return
+        }
+        const path = `profile_pictures/${this.uid}/${Date.now()}.jpg`
+
+        return new Promise(async(res, rej) => {
+            const file = await this.uriToBlob(uri)
+
+            let upload = firebase.storage().ref(path).put(file)
+            .then((snapshot)=>
+            {
+                let storage = firebase.storage()
+                let ref = storage.ref(path)
+                let getUrl = ref.getDownloadURL().then((url) => {
+                    var user = firebase.auth().currentUser;
+                    user.updateProfile({
+                        photoURL: url
+                    }).then(function() {
+                        // Update successful.
+                    }).catch(function(error) {
+                        alert('Falha ao criar sua conta '+error)
+                    });
+                    res(url);
+                })
+                
+            })
+            .catch((error)=>{
+                alert(error)
+                rej(error);
+            })
+        })
+
+    }
+
+    uploadPostPhoto = async(uri) => {
         const path = `photos/${this.uid}/${Date.now()}.jpg`
 
         return new Promise(async(res, rej) => {

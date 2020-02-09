@@ -13,8 +13,7 @@ import MessageScreen from './screens/MessageScreen'
 import PostScreen from './screens/PostScreen'
 import NotificationScreen from './screens/NotificationScreen'
 import ProfileScreen from './screens/ProfileScreen'
-
-
+import FriendsScreen from './screens/FriendsScreen'
 
 
 const AppContainer = createStackNavigator(
@@ -27,11 +26,11 @@ const AppContainer = createStackNavigator(
         tabBarIcon: ({tintColor}) => <Ionicons name='ios-home' size={24} color={tintColor}/>
       }
     },
-    Message: {
-      screen: MessageScreen,
+    Friends: {
+      screen: FriendsScreen,
       navigationOptions:{
-        title: 'Mensagens',
-        tabBarIcon: ({tintColor}) => <Ionicons name='ios-chatboxes' size={24} color={tintColor}/>
+        title: 'Amigos',
+        tabBarIcon: ({tintColor}) => <Ionicons name='ios-people' size={24} color={tintColor}/>
       }
     },
     Post: {
@@ -117,13 +116,23 @@ const AuthStack = createStackNavigator({
   }
 })
 
+const MessageStack = createStackNavigator({
+  Message: {
+    screen: MessageScreen,
+    navigationOptions:{
+    headerShown: false 
+    }
+  }
+})
+
 
 export default createAppContainer(
   createSwitchNavigator(
     {
       Loading: LoadingScreen,
       App: AppContainer,
-      Auth: AuthStack
+      Auth: AuthStack,
+      Message: MessageStack
     },
     {
       initialRouteName: "Loading",

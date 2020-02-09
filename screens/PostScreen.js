@@ -16,10 +16,12 @@ export default class PostScreen extends Component {
     state = {
         text: "",
         image: null,
+        profilePicture: null
     };
 
     componentDidMount(){
-        this.getPhotoPermission();
+        this.getPhotoPermission()
+        this.getProfilePicture()
     }
     
     handlePost = () => {
@@ -27,14 +29,12 @@ export default class PostScreen extends Component {
         let text = this.state.text
         Fire.shared.addPost(text, image)
         .then(ref => {
-            alert('teste')
             this.setState({text: '', image: null })
             this.props.navigation.goBack()
         })
         .catch(error => {
             alert('Falha ao publicar')
         })
-        alert('salve')
     }
 
     getPhotoPermission = async () => {
@@ -44,6 +44,11 @@ export default class PostScreen extends Component {
             alert('Sorry, we need camera roll permissions to make this work!');
           }
         }
+      }
+
+      getProfilePicture = () => {
+        var userPicture = firebase.auth().currentUser.photoURL
+        this.setState({profilePicture: userPicture})
       }
 
       _pickImage = async () => {
@@ -77,7 +82,7 @@ export default class PostScreen extends Component {
                 </TouchableOpacity>
             </View>
             <View style={styles.inputContainer}>
-                <Image source={require('../assets/tempAvatar.png')} style={styles.avatar}/>
+                <Image source={{uri: this.state.profilePicture}} style={styles.avatar}/>
                 <TextInput
                 placeholder='O que passa em sua cabeça?'
                 autoFocus={true}
