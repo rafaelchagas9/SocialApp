@@ -58,13 +58,12 @@ class RegisterScreen extends Component {
             })
             .then(() =>{
                 var user = firebase.auth().currentUser;
-                Fire.shared.uploadProfilePhoto(this.state.image)
+                Fire.shared.uploadProfilePhoto(this.state.image, this.state.name)
                 .then(() => {
                     user.updateProfile({
                         displayName: this.state.name,
-                      }).then(() => {
-                        Fire.shared.registerUserOnDatabase(this.state.name)
-                      }).catch(function(error) {
+                      })
+                .catch(function(error) {
                         alert('Falha ao criar sua conta '+error)
                         user.delete()
                         firebase.auth().signOut()

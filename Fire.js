@@ -50,11 +50,9 @@ class Fire{
         })
     }
 
-    registerUserOnDatabase = (name) => {
-        var user = firebase.auth().currentUser
-        var uid = user.uid
-        var profilePicture = user.photoURL
-        alert(profilePicture)
+    registerUserOnDatabase = (name, url) => {
+        var uid = firebase.auth().currentUser.uid
+        var profilePicture = url
 
         return new Promise((res, rej)=>{
             firebase.database().ref('users/'+uid).set({
@@ -67,21 +65,22 @@ class Fire{
                 res(ref)
             })
             .catch(error => {
+                this.errorCreatingAccount(error)
                 rej(error)
             })
         })
 
     }
 
-    uploadProfilePhoto = async(uri) => {
+    uploadProfilePhoto = async(uri, name) => {
         if(uri == null){
             var user = firebase.auth().currentUser;
                 user.updateProfile({
                     photoURL: 'https://firebasestorage.googleapis.com/v0/b/teste-b93c3.appspot.com/o/default%2Fuser.png?alt=media&token=7002a6de-fa02-410f-b934-9a022eb35c87'
-                }).then(function() {
-                        // Update successful.
+                }).then(() => {
+                        this.registerUserOnDatabase(name, 'https://firebasestorage.googleapis.com/v0/b/teste-b93c3.appspot.com/o/default%2Fuser.png?alt=media&token=7002a6de-fa02-410f-b934-9a022eb35c87')
                 }).catch(function(error) {
-                    alert('Falha ao criar sua conta '+error)
+                    this.errorCreatingAccount(error)
                 });
                 return
         }
@@ -99,10 +98,10 @@ class Fire{
                     var user = firebase.auth().currentUser;
                     user.updateProfile({
                         photoURL: url
-                    }).then(function() {
-                        // Update successful.
-                    }).catch(function(error) {
-                        alert('Falha ao criar sua conta '+error)
+                    }).then(() => {
+                        this.registerUserOnDatabase(name, url)
+                    }).catch((error) => {
+                        this.errorCreatingAccount(error)
                     });
                     res(url);
                 })
@@ -114,6 +113,13 @@ class Fire{
             })
         })
 
+    }
+
+    errorCreatingAccount(error){
+        var user = firebase.auth().currentUser;
+        alert('Falha ao criar sua conta '+error)
+        user.delete()
+        firebase.auth().signOut()
     }
 
     uploadPostPhoto = async(uri) => {
